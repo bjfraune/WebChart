@@ -1,15 +1,14 @@
 import { Logger } from "../Common/Logger.js";
-// import { DataQueue } from "./DataQueue.js";
-
 
 export class Model {
     currentData;
+    retrievalMethod; // 0 == unspecified/none, 1 == push, 2 == pull, 3 == poll
 
     constructor(viewModule) {
         this.logger = new Logger("Model.js");
         this.view = viewModule;
+        this.retrievalMethod = 0;
     }
-
 
     setDataSource(newDataSource) {
         if (!newDataSource) {
@@ -24,21 +23,24 @@ export class Model {
             this.logger.log("setRetrievalMethod", `Invalid retrievalMethod = ${retrievalMethod}`);
         }
 
-        this.retrievalMethod = retrievalMethod;
         this.interfaceMethod = interfaceMethod;
 
-        switch (this.retrievalMethod) {
+        switch (retrievalMethod) {
             case "push":
                 // interfaceMethod should accept an outside method that it can use to push data to this class
+                this.retrievalMethod = 1;
                 this.interfaceMethod(this.push);
                 break;
             case "pull":
                 // interfaceMethod should be a method that provides this class with pull access
+                this.retrievalMethod = 2;
                 break;
             case "poll":
                 // interfaceMethod should be a method that provides this class with poll access
+                this.retrievalMethod = 3;
                 break;
             default:
+                this.retrievalMethod = 0;
                 this.logger.log("constructor", `Invalid retrievalMethod = ${this.retrievalMethod}`);
                 break;
         }
@@ -70,14 +72,34 @@ export class Model {
             the reduced overhead.
     */
     push(datum) {
+        if (this.retrievalMethod != 1) {
+            return; // Not the current method of input
+        }
 
+        // handle input
     }
 
+    /*
+        pull single most recent data available from source
+    */
     pull() {
-        // pull single most recent data available from source
+        if (this.retrievalMethod != 2) {
+            return; // Not the current method of input
+        }
+
+        // handle input
+        this.retrievalMethod();
     }
+    /*
+        poll source for a range of data
+    */
     poll() {
-        // poll source for a range of data
+        if (this.retrievalMethod != 3) {
+            return; // Not the current method of input
+        }
+
+        // handle input
+        this.retrievalMethod();
     }
 
 }

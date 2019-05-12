@@ -35,7 +35,7 @@ export class View {
         }
     }
 
-    setXScale() {
+    setXScale(viewWindow) {
         // TODO: Don't assume scaleType == Linear
         this.xScale = d3.scaleLinear()
             .domain([0, this.viewWindow])
