@@ -5,13 +5,22 @@
     <meta charset="UTF-8">
     <title>My Chart Example</title>
     <link rel="stylesheet" type="text/css" href="./myChart.css">
-    <script src="https://d3js.org/d3.v5.js"></script>
     <script type="module" src="./myChart.js"></script>
+    <script src="https://d3js.org/d3.v5.js"></script>
 </head>
 
 <body>
+    <i>- D3 is imported directly by the user.<br>
+        - MVC is accessed directly.<br>
+        - div = orange, svg = aqua
+    </i>
     <h1 class="chartTitle">This is a sample chart</h1>
     <div class="chartContent"></div>
+    <p>If page resources are not loading locally, try running<br>
+        <code>python -m SimpleHTTPServer 8888</code><br>
+        at the project's root, and then navigating to<br>
+        <a href="http://localhost:8888/example1/myChart.html">http://localhost:8888/example1/myChart.html</a>
+    </p>
 </body>
 
 </html>

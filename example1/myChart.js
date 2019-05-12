@@ -1,7 +1,7 @@
 // import { WebChart } from "../src/WebChart.js";
-import { Model } from "./Model/Model.js.js";
-import { View } from "./View/View.js.js";
-import { Controller } from "./Controller/Controller.js.js";
+import { Model } from "../src/Model/Model.js";
+import { View } from "../src/View/View.js";
+import { Controller } from "../src/Controller/Controller.js";
 
 var myModel, myView, myController;
 
@@ -10,5 +10,7 @@ window.addEventListener('load', function () {
 });
 
 function setupChart() {
-    myView = new View(true, "chartContent", );
+    myView = new View("chartContent");
+    myModel = new Model(myView);
+    myController = new Controller(myModel);
 }
