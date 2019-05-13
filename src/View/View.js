@@ -3,7 +3,7 @@ import { Logger } from "../Common/Logger.js";
 const DEFAULT_MARGIN = 50, DEFAULT_VIEW_WINDOW = 16;
 
 export class View {
-    logger; container; chartWidth; chartHeight; margin; viewWindow; xScale; yScale;
+    container; chartWidth; chartHeight; margin; viewWindow; xScale; yScale;
 
     /*
         containerClass: string - HTML element class to contain chart
@@ -12,7 +12,7 @@ export class View {
         this.logger = new Logger("View.js");
     }
 
-    setContainerClass(containerClass){
+    setContainerClass(containerClass) {
         this.container = d3.select(`.${containerClass}`);
     }
 

@@ -1,47 +1,39 @@
 import { Logger } from "../Common/Logger.js";
 
+// var retrievalType = 0; // 0 == unspecified/none, 1 == push, 2 == pull, 3 == poll
+// var retrievalMethod = null;
+
 export class Model {
     currentData;
-    retrievalMethod; // 0 == unspecified/none, 1 == push, 2 == pull, 3 == poll
 
     constructor(viewModule) {
         this.logger = new Logger("Model.js");
         this.view = viewModule;
-        this.retrievalMethod = 0;
+
+        this.retrievalType = 0; // 0 == unspecified/none, 1 == push, 2 == pull, 3 == poll
+        this.retrievalMethod = null;
     }
 
-    setDataSource(newDataSource) {
-        if (!newDataSource) {
-            this.logger.log("setDataSource", `Invalid newDataSource = ${newDataSource}`);
-        }
+    setRetrievalMethod(interfaceType, interfaceMethod) {
+        this.retrievalMethod = interfaceMethod;
 
-        this.dataSource = newDataSource;
-    }
-
-    setRetrievalMethod(retrievalMethod, interfaceMethod) {
-        if (!retrievalMethod) {
-            this.logger.log("setRetrievalMethod", `Invalid retrievalMethod = ${retrievalMethod}`);
-        }
-
-        this.interfaceMethod = interfaceMethod;
-
-        switch (retrievalMethod) {
+        switch (interfaceType) {
             case "push":
                 // interfaceMethod should accept an outside method that it can use to push data to this class
-                this.retrievalMethod = 1;
-                this.interfaceMethod(this.push);
+                this.retrievalType = 1;
+                this.retrievalMethod(this.push);
                 break;
             case "pull":
                 // interfaceMethod should be a method that provides this class with pull access
-                this.retrievalMethod = 2;
+                this.retrievalType = 2;
                 break;
             case "poll":
                 // interfaceMethod should be a method that provides this class with poll access
-                this.retrievalMethod = 3;
+                this.retrievalType = 3;
                 break;
             default:
-                this.retrievalMethod = 0;
-                this.logger.log("constructor", `Invalid retrievalMethod = ${this.retrievalMethod}`);
+                this.retrievalType = 0;
+                this.logger.log("constructor", `Invalid interfaceType = ${interfaceType}`);
                 break;
         }
     }
@@ -71,34 +63,35 @@ export class Model {
             format may provide a (currently untested and uncalculated) performance advantege, due to
             the reduced overhead.
     */
-    push(datum) {
-        if (this.retrievalMethod != 1) {
+    push = (datum) => {
+        if (this.retrievalType != 1) {
             return; // Not the current method of input
         }
 
-        // handle input
+        this.logger.log(datum);
+        // update View
     }
 
     /*
         pull single most recent data available from source
     */
-    pull() {
-        if (this.retrievalMethod != 2) {
+    pull = () => {
+        if (this.retrievalType != 2) {
             return; // Not the current method of input
         }
 
-        // handle input
+        // update View
         this.retrievalMethod();
     }
     /*
         poll source for a range of data
     */
-    poll() {
-        if (this.retrievalMethod != 3) {
+    poll = () => {
+        if (this.retrievalType != 3) {
             return; // Not the current method of input
         }
 
-        // handle input
+        // update View
         this.retrievalMethod();
     }
 

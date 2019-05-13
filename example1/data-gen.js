@@ -2,21 +2,24 @@ import { DataQueue } from "../src/Common/DataQueue.js";
 
 var dataInterval;
 var pushFunction = null;
+
 var seconds = 0;
 var count = 0;
-const STOP = 10;
-var buffer = new DataQueue(5);
+
+const STOP = 100; // values to generate
+const INTERVAL = 1000; // new value every 1 second
+var buffer = new DataQueue(null);
 
 window.addEventListener('load', function () {
     dataInterval = setInterval(
         function () {
             generateData();
-        }, 1000);
+        }, INTERVAL);
 });
 
 function generateData() {
     ++seconds;
-    count += Math.random();
+    count += parseInt(Math.random() * 10);
 
     let datum = { "time (sec)": seconds, "count": count };
     if (typeof pushFunction == "function") {
@@ -27,25 +30,27 @@ function generateData() {
         clearInterval(dataInterval);
     }
 
-    console.log("recent datum:");
-    console.log(datum);
+    buffer.enqueue(datum);
 
-    buffer.push(datum);
-    printBuffer();
-}
-
-function printBuffer() {
-    console.log(buffer.toString());
+    // console.log(datum);
+    // console.log(buffer.toString());
+    // console.log(pull());
+    // console.log(poll(3, 5));
 }
 
 export function setPushFunction(pushTo) {
+    // console.log(`pushTo = ${pushTo}`);
     pushFunction = pushTo;
 }
 
-export function pull() {
-
+export function clearPushFunction() {
+    pushFunction = null;
 }
 
-export function poll() {
+export function pull() {
+    return buffer.front();
+}
 
+export function poll(start, end) {
+    return buffer.range(start, end);
 }
