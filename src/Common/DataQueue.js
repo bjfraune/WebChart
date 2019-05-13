@@ -2,23 +2,36 @@ import { Logger } from "./Logger.js";
 
 const DEFAULT_BUFFER_LENGTH = 16;
 
+// DataQueue might be more accurately called a BufferedQueue
+// queueRecursively - should this DataQueue hold an old buffer (DataQueue) object?
 export class DataQueue {
-
     constructor(
         bufferLength,
+        queueRecursively
     ) {
         this.logger = new Logger("DataQueue.js");
 
         this.bufferLength = (bufferLength > 0) ? bufferLength : DEFAULT_BUFFER_LENGTH;
+        this.queueRecursively = queueRecursively ? queueRecursively : false;
         this.buffer = [];
     }
 
     enqueue(datum) {
         if (this.buffer.length >= this.bufferLength) {
-            this.dequeue();
+            if (this.queueRecursively) {
+                if (!this.oldData) {
+                    this.oldData = new DataQueue(Math.pow(this.bufferLength, 2), false);
+                }
+            }
+            this.oldData.enqueue(this.dequeue());
         }
 
-        this.buffer.push(datum);
+        if (datum.length) {
+            // datum is given as an array, push individually
+            this.buffer.push(...datum);
+        } else {
+            this.buffer.push(datum);
+        }
     }
 
     dequeue() {
@@ -55,12 +68,29 @@ export class DataQueue {
         return result;
     }
 
+    setBufferLength(newLength) {
+        if (newLength < 1) {
+            this.logger.log("setBufferLength", `Invalid newLength = ${newLength}.`);
+            return;
+        }
+
+        if (newLength == this.bufferLength) {
+            return;
+        }
+
+        if (newLength < this.bufferLength) {
+            let newBuffer = this.buffer.slice(this.buffer.length - newLength);
+            this.oldData.enqueue(this.buffer);
+            this.buffer = newBuffer;
+        }
+    }
+
     toString(dataQueue) {
         if (dataQueue == null) {
             dataQueue = this;
         }
 
-        let str = "{ ";
+        let str = "[";
         if (!dataQueue.isEmpty()) {
             let i;
             for (i = 0; i < dataQueue.buffer.length - 1; i++) {
@@ -69,13 +99,13 @@ export class DataQueue {
             str += dataQueue.printDatum(dataQueue.buffer[i]);
         }
 
-        return `${str} }`;
+        return `${str}]`;
     }
 
     printDatum(obj) {
         let keys = Object.keys(obj);
 
-        let str = "[ ";
+        let str = "{";
         if (keys.length >= 1) {
             let j;
             for (j = 0; j < keys.length - 1; j++) {
@@ -84,6 +114,6 @@ export class DataQueue {
             str += `${keys[j]}: ${obj[keys[j]]}`;
         }
 
-        return `${str} ]`;
+        return `${str}}`;
     }
 }

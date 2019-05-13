@@ -1,14 +1,15 @@
 import { Logger } from "../Common/Logger.js";
+import { DataQueue } from "../Common/DataQueue.js";
 
 // var retrievalType = 0; // 0 == unspecified/none, 1 == push, 2 == pull, 3 == poll
 // var retrievalMethod = null;
 
 export class Model {
-    currentData;
-
     constructor(viewModule) {
         this.logger = new Logger("Model.js");
         this.view = viewModule;
+
+        this.currentData = new DataQueue(null, true);
 
         this.retrievalType = 0; // 0 == unspecified/none, 1 == push, 2 == pull, 3 == poll
         this.retrievalMethod = null;
@@ -68,8 +69,9 @@ export class Model {
             return; // Not the current method of input
         }
 
-        this.logger.log(datum);
+        // this.logger.logObject("push", datum);
         // update View
+
     }
 
     /*
@@ -93,6 +95,13 @@ export class Model {
 
         // update View
         this.retrievalMethod();
+    }
+
+    setViewWindow(pointsToShow) {
+        if (pointsToShow > 0) {
+            this.viewWindow = pointsToShow;
+            this.currentData.setBufferLength(pointsToShow);
+        }
     }
 
 }

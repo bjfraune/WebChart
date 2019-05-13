@@ -8,7 +8,7 @@ var count = 0;
 
 const STOP = 100; // values to generate
 const INTERVAL = 1000; // new value every 1 second
-var buffer = new DataQueue(null);
+var buffer = new DataQueue(null, true);
 
 window.addEventListener('load', function () {
     dataInterval = setInterval(
