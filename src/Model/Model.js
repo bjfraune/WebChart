@@ -1,5 +1,7 @@
 import { Logger } from "../Common/Logger.js";
 import { DataQueue } from "../Common/DataQueue.js";
+import { someData } from "../Common/test-data.js";
+// import { View } from "../View/View.js";
 
 // var retrievalType = 0; // 0 == unspecified/none, 1 == push, 2 == pull, 3 == poll
 // var retrievalMethod = null;
@@ -13,6 +15,10 @@ export class Model {
 
         this.retrievalType = 0; // 0 == unspecified/none, 1 == push, 2 == pull, 3 == poll
         this.retrievalMethod = null;
+
+        // testing only
+        // this.currentData.enqueue(someData);
+        // this.view.setData(this.currentData.range(72, 82));
     }
 
     setRetrievalMethod(interfaceType, interfaceMethod) {
@@ -69,9 +75,11 @@ export class Model {
             return; // Not the current method of input
         }
 
-        // this.logger.logObject("push", datum);
+        this.logger.logObject("push", datum);
+        this.currentData.enqueue(datum);
         // update View
 
+        // notify controller??
     }
 
     /*
@@ -98,10 +106,16 @@ export class Model {
     }
 
     setViewWindow(pointsToShow) {
-        if (pointsToShow > 0) {
-            this.viewWindow = pointsToShow;
-            this.currentData.setBufferLength(pointsToShow);
+        if (pointsToShow < 0) {
+            this.logger.log("setViewWindow", `Cannot show this number of points: pointsToShow == ${pointsToShow}`);
+            return;
         }
+
+        this.viewWindow = pointsToShow;
+        this.currentData.setBufferLength(pointsToShow);
+        let dataToShow = this.currentData.rangeRecent(this.viewWindow);
+        // this.logger.logObject("setViewWindow", dataToShow);
+        this.view.setData(dataToShow);
     }
 
 }

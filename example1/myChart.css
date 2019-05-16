@@ -12,3 +12,26 @@ svg {
     outline: 1px solid black;
     width: 680px; */
 }
+
+.line {
+    fill: none;
+    stroke: blue;
+    stroke-width: 3;
+}
+
+.overlay {
+    fill: none;
+    pointer-events: all;
+}
+
+/* Style the dots by assigning a fill and stroke */
+
+.dot {
+    fill: blue;
+    stroke: #fff;
+}
+
+.focus circle {
+    fill: none;
+    stroke: steelblue;
+}

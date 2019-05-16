@@ -14,16 +14,17 @@ export class DataQueue {
         this.bufferLength = (bufferLength > 0) ? bufferLength : DEFAULT_BUFFER_LENGTH;
         this.queueRecursively = queueRecursively ? queueRecursively : false;
         this.buffer = [];
+
+        if (this.queueRecursively) {
+            this.oldData = new DataQueue(Math.pow(this.bufferLength, 2), false);
+        }
     }
 
     enqueue(datum) {
         if (this.buffer.length >= this.bufferLength) {
             if (this.queueRecursively) {
-                if (!this.oldData) {
-                    this.oldData = new DataQueue(Math.pow(this.bufferLength, 2), false);
-                }
+                this.oldData.enqueue(this.dequeue());
             }
-            this.oldData.enqueue(this.dequeue());
         }
 
         if (datum.length) {
@@ -55,7 +56,8 @@ export class DataQueue {
         return this.buffer.length == 0;
     }
 
-    range(start, end) {
+    range = (start, end) => {
+        this.logger.logObject("range", this.buffer);
         let key = Object.keys(this.buffer[0])[0];
         var result = [];
 
@@ -66,6 +68,11 @@ export class DataQueue {
         }
 
         return result;
+    }
+
+    rangeRecent = (dataPoints) => {
+        // this.logger.logObject("rangeRecent", this.buffer.slice(this.buffer.length - dataPoints));
+        return this.buffer.slice(this.buffer.length - dataPoints);
     }
 
     setBufferLength(newLength) {
@@ -80,7 +87,9 @@ export class DataQueue {
 
         if (newLength < this.bufferLength) {
             let newBuffer = this.buffer.slice(this.buffer.length - newLength);
-            this.oldData.enqueue(this.buffer);
+            if (this.queueRecursively) {
+                this.oldData.enqueue(this.buffer);
+            }
             this.buffer = newBuffer;
         }
     }

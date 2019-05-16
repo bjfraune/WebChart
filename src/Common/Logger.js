@@ -5,11 +5,11 @@ export class Logger {
         this.owner = owner;
     }
 
-    log(caller, message) {
+    log = (caller, message) => {
         console.log(`${this.owner} - ${caller}: ${message}`);
     }
 
-    logObject(caller, obj) {
+    logObject = (caller, obj) => {
         let keys = Object.keys(obj);
 
         let objView = "{"

@@ -1,0 +1,23 @@
+export var someData = [
+    { "time(sec)": 68, "count": 329 },
+    { "time(sec)": 69, "count": 330 },
+    { "time(sec)": 70, "count": 338 },
+    { "time(sec)": 71, "count": 344 },
+    { "time(sec)": 72, "count": 348 },
+    { "time(sec)": 73, "count": 352 },
+    { "time(sec)": 74, "count": 360 },
+    { "time(sec)": 75, "count": 360 },
+    { "time(sec)": 76, "count": 361 },
+    { "time(sec)": 77, "count": 367 },
+    { "time(sec)": 78, "count": 368 },
+    { "time(sec)": 79, "count": 370 },
+    { "time(sec)": 80, "count": 373 },
+    { "time(sec)": 81, "count": 375 },
+    { "time(sec)": 82, "count": 377 },
+    { "time(sec)": 83, "count": 378 },
+    { "time(sec)": 84, "count": 380 },
+    { "time(sec)": 85, "count": 384 },
+    { "time(sec)": 86, "count": 393 },
+    { "time(sec)": 87, "count": 393 },
+    { "time(sec)": 88, "count": 401 }
+];
