@@ -6,16 +6,45 @@ var pushFunction = null;
 var seconds = 0;
 var count = 0;
 
-const STOP = 20; // values to generate
-const INTERVAL = 1000; // new value every 1 second
+var stop = 20; // values to generate
+var interval = 1000; // new value every 1 second
 var buffer = new DataQueue(null, true);
 
 window.addEventListener('load', function () {
+    // could set up an auto generator...
     dataInterval = setInterval(
         function () {
             generateData();
-        }, INTERVAL);
+        }, interval);
 });
+
+export function updateInterval(newInterval) {
+    if (newInterval) {
+        interval = newInterval;
+    }
+}
+
+export function updateValuesToGenerate(newCount) {
+    if (newCount) {
+        count = newCount;
+    }
+}
+
+export function startGenerating() {
+    if(dataInterval){
+        stopGenerating
+    }
+    dataInterval = setInterval(
+        function () {
+            generateData();
+        }, interval);
+}
+
+export function stopGenerating() {
+    if (dataInterval) {
+        clearInterval(dataInterval);
+    }
+}
 
 function generateData() {
     ++seconds;
@@ -23,10 +52,11 @@ function generateData() {
 
     let datum = { "time (sec)": seconds, "count": count };
     if (typeof pushFunction == "function") {
+        // console.log(datum);
         pushFunction(datum);
     }
 
-    if (seconds >= STOP) {
+    if (seconds >= stop) {
         clearInterval(dataInterval);
     }
 

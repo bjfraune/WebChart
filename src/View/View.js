@@ -23,7 +23,11 @@ export class View {
     }
 
     setData = (data) => {
-        this.logger.logObject("setData", data);
+        if(!data[0]){
+            this.logger.log("setData", `Empty data passed in.`);
+            return;
+        }
+        // this.logger.logObject("setData", data);
         // this.logger.log("setData", `Updating data! data.length = ${data.length}`);
         this.data = data;
         // TODO: Update View...
@@ -193,6 +197,10 @@ export class View {
     }
 
     updateView = () => {
+        // if(!this.data[0]){
+        //     this.logger.log("updateView", `Called with nothing to display!`);
+        //     return;
+        // }
         let that = this;
 
         this.setXScale();

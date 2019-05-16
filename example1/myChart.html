@@ -16,6 +16,13 @@
     </i>
     <h1 class="chartTitle">This is a sample chart</h1>
     <div class="chartContent"></div>
+    <div class="controls">
+        Enter a number for the display window:
+        <input id="myChartWindow" type="number" placeholder="points to display" value="10"></input>
+        <button id="myChartUpdate">Submit</button>
+        <button id="myChartPause">Pause</button>
+        <button id="myChartResume">Resume</button>
+    </div>
     <p>If page resources are not loading locally, try running<br>
         <code>python -m SimpleHTTPServer 8888</code><br>
         at the project's root, and then navigating to<br>

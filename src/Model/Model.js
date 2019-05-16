@@ -75,8 +75,8 @@ export class Model {
         if (this.retrievalType != 1) {
             return; // Not the current method of input
         }
-
-        this.logger.logObject("push", datum);
+        // this.logger.log("push", "called");
+        // this.logger.logObject("push", datum);
         this.currentData.enqueue(datum);
         // update View
 
