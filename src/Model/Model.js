@@ -72,6 +72,11 @@ export class Model {
             the reduced overhead.
     */
     push = (datum) => {
+        // TODO: better timing for updating chart!
+        this.timeNow = new Date().getTime();
+
+        this.logger.log("push", `timeNow == ${this.timeNow}.`)
+
         if (this.retrievalType != 1) {
             return; // Not the current method of input
         }
@@ -87,6 +92,14 @@ export class Model {
             // this.logger.log("push", "dataReceived...");
             this.onDataReceived();
         }
+
+        if (this.lastPushTime) {
+            this.logger.log("push", `this.lastPushTime == ${this.lastPushTime}.`);
+            this.updateRate = parseInt(this.timeNow) - parseInt(this.lastPushTime);
+            this.logger.log("push", `this.updateRate == ${this.updateRate}.`);
+            this.view.setTransitionRate(this.updateRate);
+        }
+        this.lastPushTime = this.timeNow;
     }
 
     /*
@@ -131,7 +144,7 @@ export class Model {
         let dataToShow = this.currentData.rangeRecent(this.viewWindow);
         // this.logger.logObject("setViewWindow", dataToShow);
         this.view.setData(dataToShow);
-        if (this.view.svg) {
+        if (this.view.svg) { // check if svg was initialized, causes error if not (once)
             this.view.updateView();
         }
     }
@@ -157,6 +170,9 @@ export class Model {
         if (this.autoPullPoll) {
             this.stopAutoPullPoll()
         }
+
+        // make sure chart can keep up with data!
+        this.view.setTransitionRate(this.pullpollInterval);
 
         this.autoPullPoll = setInterval(
             function () {

@@ -18,11 +18,42 @@ window.addEventListener('load', function () {
     document.getElementById("myChartPause").addEventListener("click", function () {
         // pause handler
         myController.pause();
-    })
+    });
+
     document.getElementById("myChartResume").addEventListener("click", function () {
         // resume handler
         myController.resume();
-    })
+    });
+
+    document.getElementById("myChartNudgeLeft").addEventListener("click", function () {
+        // nudge left handler
+        myController.nudgeLeft();
+    });
+
+    document.getElementById("myChartNudgeRight").addEventListener("click", function () {
+        // nudge right handler
+        myController.nudgeRight();
+    });
+
+    document.getElementById("dataGenUpdate").addEventListener("click", function () {
+        // data generator update controls
+        let newInterval = document.getElementById("dataGenSpeed").value;
+        let newExpire = document.getElementById("dataGenExpire").value;
+
+        let updated = 0;
+        if (newInterval > 0) {
+            updateInterval(newInterval);
+            ++updated;
+        }
+        if (newExpire > 0) {
+            updateValuesToGenerate(newExpire);
+            ++updated;
+        }
+
+        if (updated) {
+            startGenerating();
+        }
+    });
 
 });
 

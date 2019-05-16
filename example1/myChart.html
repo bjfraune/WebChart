@@ -16,13 +16,26 @@
     </i>
     <h1 class="chartTitle">This is a sample chart</h1>
     <div class="chartContent"></div>
-    <div class="controls">
+    <div class="chartControls">
+        <br>
+        <b>These controls deal only with the controller to manipulate the chart.</b><br>
         Enter a number for the display window:
         <input id="myChartWindow" type="number" placeholder="points to display" value="10"></input>
         <button id="myChartUpdate">Submit</button>
         <button id="myChartPause">Pause</button>
         <button id="myChartResume">Resume</button>
+        <button id="myChartNudgeLeft">
+            <--</button> <button id="myChartNudgeRight">-->
+        </button>
     </div>
+    <hr>
+    <div class="dataGenControls">
+        <b>These controls are for the data generator only and don't deal directly with the MVC at all.</b><br>
+        Generate data rate (ms): <input id="dataGenSpeed" type="number" placeholder="update ms" value="1000"></input>
+        Data points to generate: <input id="dataGenExpire" type="number" placeholder="nums to gen" value="60"></input>
+        <button id="dataGenUpdate">Submit</button>
+    </div>
+    <hr>
     <p>If page resources are not loading locally, try running<br>
         <code>python -m SimpleHTTPServer 8888</code><br>
         at the project's root, and then navigating to<br>

@@ -1,9 +1,10 @@
 import { Logger } from "../Common/Logger.js";
 
-const DEFAULT_MARGIN = 50, CHART_TRANSITIONS = 500;
+const DEFAULT_MARGIN = 50;
 
 export class View {
     container; chartWidth; chartHeight; margin; xScale; yScale; svg;
+    chartTransitions = 500;
 
     // Testing specs: Should implement a setter for these
     chartType = "line";
@@ -23,7 +24,7 @@ export class View {
     }
 
     setData = (data) => {
-        if(!data[0]){
+        if (!data[0]) {
             this.logger.log("setData", `Empty data passed in.`);
             return;
         }
@@ -214,18 +215,18 @@ export class View {
         // } else {
         //     this.logger.log("updateView", ".y.axis not empty");
         this.svg.selectAll(".y.axis")
-            .transition().duration(CHART_TRANSITIONS)
+            .transition().duration(this.chartTransitions)
             .call(d3.axisLeft(this.yScale));
         // }
 
         this.svg.selectAll(".x.axis")
-            .transition().duration(CHART_TRANSITIONS)
+            .transition().duration(this.chartTransitions)
             .call(d3.axisBottom(this.xScale));
 
         this.svg.select(".line")
             .datum(this.data) // 10. Binds data to the line 
             .attr("class", "line") // Assign a class for styling 
-            .transition().duration(CHART_TRANSITIONS)
+            .transition().duration(this.chartTransitions)
             .attr("d", this.line); // 11. Calls the line generator 
 
         // TODO: Don't remove all, be efficient and just remove the old dots...
@@ -234,7 +235,7 @@ export class View {
             .data(this.data)
             .enter().append("circle") // Uses the enter().append() method
             .attr("class", "dot") // Assign a class for styling
-            // .transition().duration(CHART_TRANSITIONS)
+            // .transition().duration(this.chartTransitions)
             .attr("cx", function (d, i) {
                 // that.logger.logObject("setChart", d);
                 // that.logger.log("setChart", `i == ${i}`);
@@ -251,6 +252,12 @@ export class View {
             })
             .on("mouseout", function () { });
 
+    }
+
+    setTransitionRate(newTransitionRate) {
+        if (newTransitionRate > 0) {
+            this.chartTransitions = newTransitionRate;
+        }
     }
 
     updateMinMax() { // try substituting d3.max......

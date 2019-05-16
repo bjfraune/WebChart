@@ -26,7 +26,7 @@ export function updateInterval(newInterval) {
 
 export function updateValuesToGenerate(newCount) {
     if (newCount) {
-        count = newCount;
+        stop = newCount;
     }
 }
 

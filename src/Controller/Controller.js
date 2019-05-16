@@ -34,4 +34,12 @@ export class Controller {
     resume() {
         this.setKeepViewUpdated(true);
     }
+
+    nudgeLeft() {
+        this.logger.log("nudgeLeft", "Unimplemented.");
+    }
+
+    nudgeRight() {
+        this.logger.log("nudgeRight", "Unimplemented.");
+    }
 }
