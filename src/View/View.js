@@ -1,11 +1,17 @@
 import { Logger } from "../Common/Logger.js";
 
-const DEFAULT_MARGIN = 50, DEFAULT_VIEW_WINDOW = 16;
+const DEFAULT_MARGIN = 50, CHART_TRANSITIONS = 500;
 
 export class View {
-    container; chartWidth; chartHeight; margin; xScale; yScale;
+    container; chartWidth; chartHeight; margin; xScale; yScale; svg;
+
+    // Testing specs: Should implement a setter for these
     chartType = "line";
-    svg;
+    scaleType = "linear";
+
+    // for locating x and y vars in the object... should allow user to set for custom json...
+    xDataIndex = 0;
+    yDataIndex = 1;
 
     /*
         containerClass: string - HTML element class to contain chart
@@ -25,6 +31,8 @@ export class View {
         this.keys = Object.keys(this.data[0]);
         this.xKey = this.keys[0];
         this.yKey = this.keys[1];
+
+        this.updateMinMax();
     }
 
     setContainerClass(containerClass) {
@@ -59,40 +67,67 @@ export class View {
     setXScale = () => {
         // this.logger.logObject("setXScale", this.data);
 
-        let minMax = this.getMinMax(this.data, 0);
         // TODO: Don't assume scaleType == Linear
         // this.logger.log("setXScale", `this.data.length = ${this.data.length}`);
-        this.xScale = d3.scaleLinear()
-            .domain(minMax)
-            .range([0, this.chartWidth]);
+        switch (this.scaleType) {
+            case "linear":
+                this.xScale = d3.scaleLinear()
+                    .domain([this.dataXMin, this.dataXMax])
+                    .range([0, this.chartWidth]);
+                break;
+            case "log":
+                this.xScale = d3.scaleLog()
+                    .domain([this.dataXMin, this.dataXMax])
+                    .range([0, this.chartWidth]);
+                break;
+            default:
+                this.logger.log("setXScale", `The specified scale is not implemented: this.scaleType == ${this.scaleType}`);
+                break;
+        }
 
         // this.logger.log("setXScale", `this.xScale is set = ${this.xScale}`);
         // this.logger.log("setXScale", `typeof this.xScale == ${typeof this.xScale}`);
     }
 
     setYScale = (min, max) => {
-        let minMax = this.getMinMax(this.data, 1);
         // TODO: Don't assume scaleType == Linear
         // this.logger.log("setYScale", `this.data.length = ${this.data.length}`);
 
-        this.yScale = d3.scaleLinear()
-            .domain(minMax) // adjust to data min/max
-            .range([this.chartHeight, 0]);
+        switch (this.scaleType) {
+            case "linear":
+                this.yScale = d3.scaleLinear()
+                    .domain([this.dataYMin, this.dataYMax])
+                    .range([this.chartHeight, 0]);
+                break;
+            case "log":
+                this.yScale = d3.scaleLog()
+                    .domain([this.dataYMin, this.dataYMax])
+                    .range([this.chartHeight, 0]);
+                break;
+            default:
+                this.logger.log("setXScale", `The specified scale is not implemented: this.scaleType == ${this.scaleType}`);
+                break;
+        }
+
     }
 
     setLine = () => {
+        // TODO: allow specification of curve
         let that = this;
         this.line = d3.line()
             .x(function (d, i) {
                 // that.logger.logObject("setLine", d);
                 // that.logger.log("setLine", `i == ${i}, that.data[i][that.keys[0]] == ${that.data[i][that.keys[0]]}`);
-                return that.xScale(that.data[i][that.keys[0]]);
+                return that.xScale(d[that.keys[0]]);
             })
             .y(function (d) {
                 // that.logger.log("setLIne", `d[that.yKey] == ${d[that.yKey]}`);
                 return that.yScale(d[that.yKey]);
             })
-            .curve(d3.curveMonotoneX);
+            // .curve(d3.curveMonotoneX);
+            .curve(d3.curveLinear);
+        // .curve(d3.curveNatural);
+
 
         // this.logger.log("setLine", "Complete.");
     }
@@ -162,35 +197,40 @@ export class View {
 
         this.setXScale();
         this.setYScale();
+        // if no axis exists, create one, otherwise update it
+        // if (this.svg.selectAll(".y.axis").empty()) {
+        //     this.logger.log("updateView", ".y.axis empty");
+        //     this.svg.append("g")
+        //         .attr("class", "y axis")
+        //         .call(d3.axisLeft(this.yScale));
+        // } else {
+        //     this.logger.log("updateView", ".y.axis not empty");
+        this.svg.selectAll(".y.axis")
+            .transition().duration(CHART_TRANSITIONS)
+            .call(d3.axisLeft(this.yScale));
+        // }
 
-        // Select the section we want to apply our changes to
-        this.svg.transition();
+        this.svg.selectAll(".x.axis")
+            .transition().duration(CHART_TRANSITIONS)
+            .call(d3.axisBottom(this.xScale));
 
-        this.svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", `translate(0, ${this.chartHeight})`)
-            .call(d3.axisBottom(this.xScale)); // Create an axis component with d3.axisBottom
-
-        // 4. Call the y axis in a group tag
-        this.svg.append("g")
-            .attr("class", "y axis")
-            .call(d3.axisLeft(this.yScale)); // Create an axis component with d3.axisLeft
-
-        // 9. Append the path, bind the data, and call the line generator 
-        this.svg.append("path")
+        this.svg.select(".line")
             .datum(this.data) // 10. Binds data to the line 
             .attr("class", "line") // Assign a class for styling 
+            .transition().duration(CHART_TRANSITIONS)
             .attr("d", this.line); // 11. Calls the line generator 
 
-        // 12. Appends a circle for each datapoint
+        // TODO: Don't remove all, be efficient and just remove the old dots...
+        this.svg.selectAll(".dot").remove();
         this.svg.selectAll(".dot")
             .data(this.data)
             .enter().append("circle") // Uses the enter().append() method
             .attr("class", "dot") // Assign a class for styling
+            // .transition().duration(CHART_TRANSITIONS)
             .attr("cx", function (d, i) {
                 // that.logger.logObject("setChart", d);
                 // that.logger.log("setChart", `i == ${i}`);
-                return that.xScale(that.data[i][that.keys[0]])
+                return that.xScale(d[that.keys[0]])
             })
             .attr("cy", function (d) {
                 // that.logger.log("setChart", `typeof d[that.yKey] == ${typeof d[that.yKey]}`);
@@ -205,21 +245,39 @@ export class View {
 
     }
 
-    getMinMax(values, keyIndex) { // try substituting d3.max......
-        let keys = Object.keys(values[keyIndex]); // TODO: Dynamix
-
-        let min = values[0][keys[keyIndex]], max = values[0][keys[keyIndex]];
-
-        let i;
-        for (i = 1; i < values.length; i++) {
-            if (values[i][keys[keyIndex]] < min) {
-                min = values[i][keys[keyIndex]];
-            }
-            if (values[i][keys[keyIndex]] > min) {
-                max = values[i][keys[keyIndex]];
-            }
+    updateMinMax() { // try substituting d3.max......
+        if (!this.data) {
+            this.logger.log("getMinMax", `invalid this.data ==  ${this.data}`);
+            return [-1, 1]; // display something??
         }
 
-        return [min, max];
+        // if (values.length <= keyIndex) {
+        // just return this object's values if there is only one??
+        // }
+
+        // take keys of first object, assume all same structure
+        let keys = Object.keys(this.data[0]); // TODO: Dynamix
+
+        this.dataXMin = this.data[0][keys[this.xDataIndex]];
+        this.dataXMax = this.data[0][keys[this.xDataIndex]];
+
+        this.dataYMin = this.data[0][keys[this.yDataIndex]];
+        this.dataYMax = this.data[0][keys[this.yDataIndex]];
+
+        // already captured object 0 min/max, start on object 1
+        for (let i = 1; i < this.data.length; i++) {
+            if (this.data[i][keys[this.xDataIndex]] < this.dataXMin) {
+                this.dataXMin = this.data[i][keys[this.xDataIndex]];
+            }
+            if (this.data[i][keys[this.xDataIndex]] > this.dataXMax) {
+                this.dataXMax = this.data[i][keys[this.xDataIndex]];
+            }
+            if (this.data[i][keys[this.yDataIndex]] < this.dataYMin) {
+                this.dataYMin = this.data[i][keys[this.yDataIndex]];
+            }
+            if (this.data[i][keys[this.yDataIndex]] > this.dataYMax) {
+                this.dataYMax = this.data[i][keys[this.yDataIndex]];
+            }
+        }
     }
 }

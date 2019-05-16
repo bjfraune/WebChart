@@ -17,4 +17,13 @@ export class Controller {
         this.viewWindow = newWindow;
         this.model.setViewWindow(this.viewWindow);
     }
+
+    setKeepViewUpdated(keepViewUpdated) {
+        this.keepViewUpdated = keepViewUpdated;
+        if (this.keepViewUpdated) {
+            this.model.setDataReceiptCallback(this.model.updateView);
+        } else {
+            this.model.setDataReceiptCallback(null);
+        }
+    }
 }

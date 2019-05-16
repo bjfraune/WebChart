@@ -82,9 +82,9 @@ export class Model {
 
         // notify controller instead??
 
-        this.logger.log("push", `typeof this.onDataReceived == ${this.onDataReceived}`);
+        // this.logger.log("push", `typeof this.onDataReceived == ${this.onDataReceived}`);
         if (this.onDataReceived) {
-            this.logger.log("push", "dataReceived...");
+            // this.logger.log("push", "dataReceived...");
             this.onDataReceived();
         }
     }
@@ -134,7 +134,7 @@ export class Model {
     }
 
     updateView() {
-        this.logger.log("updateView", "called.");
+        // this.logger.log("updateView", "called.");
         let dataToShow = this.currentData.rangeRecent(this.viewWindow);
         this.view.setData(dataToShow);
         this.view.updateView();

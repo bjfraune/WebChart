@@ -57,7 +57,7 @@ export class DataQueue {
     }
 
     range = (start, end) => {
-        this.logger.logObject("range", this.buffer);
+        // this.logger.logObject("range", this.buffer);
         let key = Object.keys(this.buffer[0])[0];
         var result = [];
 
