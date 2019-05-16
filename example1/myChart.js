@@ -17,9 +17,11 @@ window.addEventListener('load', function () {
 
     document.getElementById("myChartPause").addEventListener("click", function () {
         // pause handler
+        myController.pause();
     })
     document.getElementById("myChartResume").addEventListener("click", function () {
         // resume handler
+        myController.resume();
     })
 
 });

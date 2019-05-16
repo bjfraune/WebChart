@@ -32,7 +32,7 @@ export function updateValuesToGenerate(newCount) {
 
 export function startGenerating() {
     if(dataInterval){
-        stopGenerating
+        stopGenerating();
     }
     dataInterval = setInterval(
         function () {

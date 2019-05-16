@@ -26,4 +26,12 @@ export class Controller {
             this.model.setDataReceiptCallback(null);
         }
     }
+
+    pause() {
+        this.setKeepViewUpdated(false);
+    }
+
+    resume() {
+        this.setKeepViewUpdated(true);
+    }
 }

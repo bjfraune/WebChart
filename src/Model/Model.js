@@ -98,7 +98,7 @@ export class Model {
         }
 
         // update View
-        this.retrievalMethod();
+        this.currentData.enqueue(this.retrievalMethod());
 
         if (this.onDataReceived) {
             this.onDataReceived();
@@ -107,13 +107,13 @@ export class Model {
     /*
         poll source for a range of data
     */
-    poll = () => {
+    poll = (start, end) => {
         if (this.retrievalType != 3) {
             return; // Not the current method of input
         }
 
         // update View
-        this.retrievalMethod();
+        this.currentData.enqueue(this.retrievalMethod(start, end));
 
         if (this.onDataReceived) {
             this.onDataReceived();
@@ -131,6 +131,9 @@ export class Model {
         let dataToShow = this.currentData.rangeRecent(this.viewWindow);
         // this.logger.logObject("setViewWindow", dataToShow);
         this.view.setData(dataToShow);
+        if (this.view.svg) {
+            this.view.updateView();
+        }
     }
 
     updateView() {
@@ -143,5 +146,37 @@ export class Model {
     setDataReceiptCallback(cb) {
         this.logger.log("setDataReceiptCallback", "cb received...");
         this.onDataReceived = cb;
+    }
+
+
+    // can be used to automatically retrieve data (if not using push)
+    setAutoPullPoll(interval) {
+        if (interval > 0) {
+            this.pullpollInterval = interval;
+        }
+        if (this.autoPullPoll) {
+            this.stopAutoPullPoll()
+        }
+
+        this.autoPullPoll = setInterval(
+            function () {
+                switch (this.retrievalType) {
+                    case 2:
+                        pull();
+                        break;
+                    case 3:
+                        poll();
+                        break;
+                    default:
+                        this.logger.log("setAutoPullPoll", `Could not set auto retrieval for this.retrievalType = ${this.retrievalType}`);
+                        break;
+                }
+            }, this.pullpollInterval);
+    }
+
+    stopAutoPullPoll() {
+        if (this.autoPullPoll) {
+            clearInterval(this.autoPullPoll);
+        }
     }
 }
