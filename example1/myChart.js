@@ -14,7 +14,7 @@ function setupChart() {
     // Safest to first initialize MVC
     myView = new View("chartContent");
     myModel = new Model(myView);
-    myController = new Controller(myModel);
+    myController = new Controller(myModel, true);
 
 
     // Next we can start setting details (some dependencies)
@@ -22,7 +22,7 @@ function setupChart() {
 
     sleep(5000).then(() => {
         console.log("Time to set up chart...");
-        myController.setViewWindow(3);
+        myController.setViewWindow(10);
 
         myView.setChartMargins(null, null, null, null);
         myView.setChartWidth(700);

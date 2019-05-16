@@ -6,6 +6,7 @@ import { someData } from "../Common/test-data.js";
 // var retrievalType = 0; // 0 == unspecified/none, 1 == push, 2 == pull, 3 == poll
 // var retrievalMethod = null;
 
+// TODO: Determine algorithm for buffering efficiently... based on frequency of data input? based on available storage?
 export class Model {
     constructor(viewModule) {
         this.logger = new Logger("Model.js");
@@ -79,7 +80,13 @@ export class Model {
         this.currentData.enqueue(datum);
         // update View
 
-        // notify controller??
+        // notify controller instead??
+
+        this.logger.log("push", `typeof this.onDataReceived == ${this.onDataReceived}`);
+        if (this.onDataReceived) {
+            this.logger.log("push", "dataReceived...");
+            this.onDataReceived();
+        }
     }
 
     /*
@@ -92,6 +99,10 @@ export class Model {
 
         // update View
         this.retrievalMethod();
+
+        if (this.onDataReceived) {
+            this.onDataReceived();
+        }
     }
     /*
         poll source for a range of data
@@ -103,6 +114,10 @@ export class Model {
 
         // update View
         this.retrievalMethod();
+
+        if (this.onDataReceived) {
+            this.onDataReceived();
+        }
     }
 
     setViewWindow(pointsToShow) {
@@ -112,10 +127,21 @@ export class Model {
         }
 
         this.viewWindow = pointsToShow;
-        this.currentData.setBufferLength(pointsToShow);
+        // this.currentData.setBufferLength(pointsToShow);
         let dataToShow = this.currentData.rangeRecent(this.viewWindow);
         // this.logger.logObject("setViewWindow", dataToShow);
         this.view.setData(dataToShow);
     }
 
+    updateView() {
+        this.logger.log("updateView", "called.");
+        let dataToShow = this.currentData.rangeRecent(this.viewWindow);
+        this.view.setData(dataToShow);
+        this.view.updateView();
+    }
+
+    setDataReceiptCallback(cb) {
+        this.logger.log("setDataReceiptCallback", "cb received...");
+        this.onDataReceived = cb;
+    }
 }

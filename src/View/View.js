@@ -17,7 +17,7 @@ export class View {
     }
 
     setData = (data) => {
-        // this.logger.logObject("setData", data);
+        this.logger.logObject("setData", data);
         // this.logger.log("setData", `Updating data! data.length = ${data.length}`);
         this.data = data;
         // TODO: Update View...
@@ -57,6 +57,8 @@ export class View {
     }
 
     setXScale = () => {
+        // this.logger.logObject("setXScale", this.data);
+
         let minMax = this.getMinMax(this.data, 0);
         // TODO: Don't assume scaleType == Linear
         // this.logger.log("setXScale", `this.data.length = ${this.data.length}`);
@@ -95,6 +97,7 @@ export class View {
         // this.logger.log("setLine", "Complete.");
     }
 
+    // can stack data by calling setChart twice, with out reselecting/appending the svg, or rewriting the labels...
     setChart = () => {
         let that = this;
 
@@ -141,10 +144,37 @@ export class View {
                 // that.attr('class', 'focus');
             })
             .on("mouseout", function () { });
+
+        // add labels
+        this.svg
+            .append("text")
+            .attr("transform", `translate(-35,${(this.chartHeight + this.margin.bottom) / 2}) rotate(-90)`)
+            .text(this.keys[1]);
+
+        this.svg
+            .append("text")
+            .attr("transform", `translate(${(this.chartWidth / 2)}, ${(this.chartHeight + this.margin.bottom - 5)})`)
+            .text(this.keys[0]);
     }
 
-    redraw = () => {
+    updateView = () => {
         let that = this;
+
+        this.setXScale();
+        this.setYScale();
+
+        // Select the section we want to apply our changes to
+        this.svg.transition();
+
+        this.svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", `translate(0, ${this.chartHeight})`)
+            .call(d3.axisBottom(this.xScale)); // Create an axis component with d3.axisBottom
+
+        // 4. Call the y axis in a group tag
+        this.svg.append("g")
+            .attr("class", "y axis")
+            .call(d3.axisLeft(this.yScale)); // Create an axis component with d3.axisLeft
 
         // 9. Append the path, bind the data, and call the line generator 
         this.svg.append("path")
@@ -175,7 +205,7 @@ export class View {
 
     }
 
-    getMinMax(values, keyIndex) {
+    getMinMax(values, keyIndex) { // try substituting d3.max......
         let keys = Object.keys(values[keyIndex]); // TODO: Dynamix
 
         let min = values[0][keys[keyIndex]], max = values[0][keys[keyIndex]];

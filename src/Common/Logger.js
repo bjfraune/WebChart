@@ -24,4 +24,8 @@ export class Logger {
 
         console.log(`${this.owner} - ${caller}: ${objView}`);
     }
+
+    logArray = (caller, arr) => {
+        console.log(`* logArray not implemented yet *`);
+    }
 }

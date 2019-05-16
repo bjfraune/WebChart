@@ -72,6 +72,10 @@ export class DataQueue {
 
     rangeRecent = (dataPoints) => {
         // this.logger.logObject("rangeRecent", this.buffer.slice(this.buffer.length - dataPoints));
+        if (dataPoints >= this.buffer.length) {
+            this.logger.log("rangeRecent", `dataPoints requested exceeds available: dataPoints == ${dataPoints}, this.buffer.length == ${this.buffer.length}.`);
+            return this.buffer;
+        }
         return this.buffer.slice(this.buffer.length - dataPoints);
     }
 
