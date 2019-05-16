@@ -6,7 +6,7 @@ var pushFunction = null;
 var seconds = 0;
 var count = 0;
 
-var stop = 20; // values to generate
+var stop = 120; // values to generate
 var interval = 1000; // new value every 1 second
 var buffer = new DataQueue(null, true);
 

@@ -3,16 +3,14 @@ import { DataQueue } from "../Common/DataQueue.js";
 import { someData } from "../Common/test-data.js";
 // import { View } from "../View/View.js";
 
-// var retrievalType = 0; // 0 == unspecified/none, 1 == push, 2 == pull, 3 == poll
-// var retrievalMethod = null;
-
+// TODO: Make sure DataQueue keeps data in buffer for current if paused... how long??
 // TODO: Determine algorithm for buffering efficiently... based on frequency of data input? based on available storage?
 export class Model {
     constructor(viewModule) {
         this.logger = new Logger("Model.js");
         this.view = viewModule;
 
-        this.currentData = new DataQueue(null, true);
+        this.currentData = new DataQueue(100, true);
 
         this.retrievalType = 0; // 0 == unspecified/none, 1 == push, 2 == pull, 3 == poll
         this.retrievalMethod = null;
@@ -75,7 +73,7 @@ export class Model {
         // TODO: better timing for updating chart!
         this.timeNow = new Date().getTime();
 
-        this.logger.log("push", `timeNow == ${this.timeNow}.`)
+        // this.logger.log("push", `timeNow == ${this.timeNow}.`)
 
         if (this.retrievalType != 1) {
             return; // Not the current method of input
@@ -94,10 +92,10 @@ export class Model {
         }
 
         if (this.lastPushTime) {
-            this.logger.log("push", `this.lastPushTime == ${this.lastPushTime}.`);
+            // this.logger.log("push", `this.lastPushTime == ${this.lastPushTime}.`);
             this.updateRate = parseInt(this.timeNow) - parseInt(this.lastPushTime);
-            this.logger.log("push", `this.updateRate == ${this.updateRate}.`);
-            this.view.setTransitionRate(this.updateRate);
+            // this.logger.log("push", `this.updateRate == ${this.updateRate}.`);
+            this.view.setTransitionRate(this.updateRate / 2);
         }
         this.lastPushTime = this.timeNow;
     }
